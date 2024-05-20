@@ -1,0 +1,11 @@
+package com.zkorum.capacitor.securesigning;
+
+import android.util.Log;
+
+public class SecureSigning {
+
+    public String echo(String value) {
+        Log.i("Echo", value);
+        return value;
+    }
+}
