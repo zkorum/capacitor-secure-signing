@@ -1,6 +1,6 @@
 {
   "name": "@zkorum/capacitor-secure-signing",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Generate signing keys and use them securely",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

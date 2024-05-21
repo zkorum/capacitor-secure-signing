@@ -10,14 +10,24 @@ public class SecureSigningPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "SecureSigningPlugin"
     public let jsName = "SecureSigning"
     public let pluginMethods: [CAPPluginMethod] = [
-        CAPPluginMethod(name: "echo", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "generateKeyPair", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "sign", returnType: CAPPluginReturnPromise)
     ]
     private let implementation = SecureSigning()
 
-    @objc func echo(_ call: CAPPluginCall) {
-        let value = call.getString("value") ?? ""
+    @objc func generateKeyPair(_ call: CAPPluginCall) {
+        let prefixedKey = call.getString("prefixedKey") ?? ""
         call.resolve([
-            "value": implementation.echo(value)
+            "publicKey": implementation.generateKeyPair(prefixedKey)
+        ])
+    }
+
+    @objc func sign(_ call: CAPPluginCall) {
+        let prefixedKey = call.getString("prefixedKey") ?? ""
+        let data = call.getString("data") ?? ""
+        let decodedData = Data(data.utf8).base64EncodedString()
+        call.resolve([
+            "signature": implementation.sign(prefixedKey, decodedData)
         ])
     }
 }

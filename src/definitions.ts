@@ -1,3 +1,9 @@
 export interface SecureSigningPlugin {
-  echo(options: { value: string }): Promise<{ value: string }>;
+  generateKeyPair(options: {
+    prefixedKey: string;
+  }): Promise<{ publicKey: string }>;
+  sign(options: {
+    prefixedKey: string;
+    data: string;
+  }): Promise<{ signature: string }>;
 }

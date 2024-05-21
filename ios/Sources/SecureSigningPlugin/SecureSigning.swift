@@ -1,8 +1,15 @@
 import Foundation
 
 @objc public class SecureSigning: NSObject {
-    @objc public func echo(_ value: String) -> String {
-        print(value)
-        return value
+    //TODO:
+    @objc public func generateKeyPair(_ prefixedKey: String) -> String {
+        print(prefixedKey)
+        return prefixedKey
+    }
+
+    //TODO:
+    @objc public func sign(_ prefixedKey: String, _ decodedData: Data) -> String {
+        print(prefixedKey)
+        return prefixedKey
     }
 }
