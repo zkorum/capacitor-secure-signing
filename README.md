@@ -1,6 +1,8 @@
 # @zkorum/capacitor-secure-signing
 
-Generate signing keys and use them securely
+Generate signing keys and use them securely.
+
+WARNING: beta software. Only tailored for ZKorum's need for now. At this stage, API and core functionalities WILL change and WILL NOT be backward compatible.
 
 ## Install
 
@@ -51,6 +53,24 @@ sign(options: { prefixedKey: string; data: string; }) => Promise<{ signature: st
 --------------------
 
 </docgen-api>
+
+## TODO
+
+Handle the following exceptions properly: 
+
+```java
+java.security.InvalidAlgorithmParameterException: java.lang.IllegalStateException: Secure lock screen must be enabled to create keys requiring user authentication
+```
+=> happens when no pincode whatsover has been set => sent a specific error?
+
+```java
+File: http://192.168.1.96:9500/src/boot/passphrase.ts - Line 20 - Msg: Error while setting up key StorageError: An OS error occurred (UserNotAuthenticatedException)
+```
+=> happens when the user is not authenticated (or if the user authentication has expired? verify) => send specific error
+
+
+Also uniform the errors with iOS.
+
 
 ## License
 

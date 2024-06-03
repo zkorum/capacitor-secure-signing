@@ -11,11 +11,11 @@ public class SecureSigningException extends Exception {
 
     static {
         errorMap = new HashMap<>();
-        errorMap.put(ErrorKind.keystoreError, "KeyStore related error");
-        errorMap.put(ErrorKind.missingKey, "Empty key or missing key param");
-        errorMap.put(ErrorKind.invalidData, "The data in the store is in an invalid format");
-        errorMap.put(ErrorKind.keyGenerationError, "Error while generating the key");
-        errorMap.put(ErrorKind.capacitorError, "Error while fetching keys in capacitor plugins");
+        errorMap.put(ErrorKind.keystoreError, "KeyStore related error: %s - %s");
+        errorMap.put(ErrorKind.missingKey, "Empty key or missing key param: %s -%s");
+        errorMap.put(ErrorKind.invalidData, "The data in the store is in an invalid format: %s -%s");
+        errorMap.put(ErrorKind.keyGenerationError, "Error while generating the key: %s - %s");
+        errorMap.put(ErrorKind.capacitorError, "Error while fetching keys in capacitor plugins: %s - %s");
     }
 
     private String message = "";
@@ -40,11 +40,12 @@ public class SecureSigningException extends Exception {
 
     void init(ErrorKind kind, @Nullable Throwable osException) {
         String message = errorMap.get(kind);
-
         if (message != null) {
-            this.message = message;
-            this.code = kind.toString();
+            if (osException != null) {
+                this.message = String.format(message, osException.getClass().getSimpleName(), osException.getMessage());
+            }
         }
+        this.code = kind.toString();
     }
 
     public String getMessage() {
