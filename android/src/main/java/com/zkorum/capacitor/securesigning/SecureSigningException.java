@@ -16,6 +16,10 @@ public class SecureSigningException extends Exception {
         errorMap.put(ErrorKind.invalidData, "The data in the store is in an invalid format: %s -%s");
         errorMap.put(ErrorKind.keyGenerationError, "Error while generating the key: %s - %s");
         errorMap.put(ErrorKind.capacitorError, "Error while fetching keys in capacitor plugins: %s - %s");
+        errorMap.put(ErrorKind.secureLockScreenDisabled, "Secure lock screen is disabled: %s - %s");
+        errorMap.put(ErrorKind.userNotAuthenticated, "User is not authenticated: %s - %s");
+        errorMap.put(ErrorKind.osError, "An OS error occurred: %s - %s");
+        errorMap.put(ErrorKind.unknownError, "An unknown error occurred: %s - %s");
     }
 
     private String message = "";
@@ -65,6 +69,10 @@ public class SecureSigningException extends Exception {
         missingKey,
         invalidData,
         keyGenerationError,
-        capacitorError
+        capacitorError,
+        secureLockScreenDisabled,
+        userNotAuthenticated,
+        osError,
+        unknownError
     }
 }

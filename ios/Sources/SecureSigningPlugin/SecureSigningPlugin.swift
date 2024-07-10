@@ -29,5 +29,17 @@ public class SecureSigningPlugin: CAPPlugin, CAPBridgedPlugin {
         call.resolve([
             "signature": implementation.sign(prefixedKey, decodedData)
         ])
+
+    @objc func doesKeyPairExist(_ call: CAPPluginCall) {
+        let prefixedKey = call.getString("prefixedKey") ?? ""
+        call.resolve([
+            "isExisting": implementation.doesKeyPairExist(prefixedKey)
+        ])
+
+    @objc func createKeyPairIfDoesNotExist(_ call: CAPPluginCall) {
+        let prefixedKey = call.getString("prefixedKey") ?? ""
+        call.resolve([
+            "publicKey": implementation.createKeyPairIfDoesNotExist(prefixedKey)
+        ])
     }
 }

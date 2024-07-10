@@ -15,13 +15,30 @@ npx cap sync
 
 <docgen-index>
 
+* [`doesKeyPairExist(...)`](#doeskeypairexist)
 * [`generateKeyPair(...)`](#generatekeypair)
 * [`sign(...)`](#sign)
+* [`createKeyPairIfDoesNotExist(...)`](#createkeypairifdoesnotexist)
 
 </docgen-index>
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
+
+### doesKeyPairExist(...)
+
+```typescript
+doesKeyPairExist(options: { prefixedKey: string; }) => Promise<{ isExisting: boolean; }>
+```
+
+| Param         | Type                                  |
+| ------------- | ------------------------------------- |
+| **`options`** | <code>{ prefixedKey: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ isExisting: boolean; }&gt;</code>
+
+--------------------
+
 
 ### generateKeyPair(...)
 
@@ -52,24 +69,27 @@ sign(options: { prefixedKey: string; data: string; }) => Promise<{ signature: st
 
 --------------------
 
+
+### createKeyPairIfDoesNotExist(...)
+
+```typescript
+createKeyPairIfDoesNotExist(options: { prefixedKey: string; }) => Promise<{ publicKey: string; }>
+```
+
+| Param         | Type                                  |
+| ------------- | ------------------------------------- |
+| **`options`** | <code>{ prefixedKey: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ publicKey: string; }&gt;</code>
+
+--------------------
+
 </docgen-api>
 
 ## TODO
 
-Handle the following exceptions properly: 
-
-```java
-java.security.InvalidAlgorithmParameterException: java.lang.IllegalStateException: Secure lock screen must be enabled to create keys requiring user authentication
-```
-=> happens when no pincode whatsover has been set => sent a specific error?
-
-```java
-File: http://192.168.1.96:9500/src/boot/passphrase.ts - Line 20 - Msg: Error while setting up key StorageError: An OS error occurred (UserNotAuthenticatedException)
-```
-=> happens when the user is not authenticated (or if the user authentication has expired? verify) => send specific error
-
-
-Also uniform the errors with iOS.
+- iOS support
+- more options for keys / security
 
 
 ## License

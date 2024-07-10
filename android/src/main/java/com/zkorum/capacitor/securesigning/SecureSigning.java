@@ -13,14 +13,19 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.UnrecoverableEntryException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.spec.ECGenParameterSpec;
 import java.util.Base64;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.DERBitString;
+import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.crypto.signers.PlainDSAEncoding;
 import org.bouncycastle.math.ec.custom.sec.SecP256R1Curve;
 
@@ -74,7 +79,8 @@ public class SecureSigning {
     // This is inspired by:
     // - https://gist.github.com/DinoChiesa/7520e1dea6e79888acab8ea8206afe92
     // - https://stackoverflow.com/a/72415832
-    // - https://www.tabnine.com/code/java/classes/org.bouncycastle.math.ec.custom.sec.SecP256R1Curve?snippet=5ce6bbffe594670004db5c23
+    // -
+    // https://www.tabnine.com/code/java/classes/org.bouncycastle.math.ec.custom.sec.SecP256R1Curve?snippet=5ce6bbffe594670004db5c23
     private byte[] toP1363(byte[] asn1EncodedSignature) {
         ASN1Sequence seq = ASN1Sequence.getInstance(asn1EncodedSignature);
         BigInteger r = ((ASN1Integer) seq.getObjectAt(0)).getValue();
@@ -111,5 +117,50 @@ public class SecureSigning {
             e.printStackTrace();
             throw new SecureSigningException(SecureSigningException.ErrorKind.keystoreError, e);
         }
+    }
+
+    public boolean doesKeyPairExist(String prefixedKey) throws SecureSigningException {
+        KeyStore ks = this.getKeyStore();
+        KeyStore.Entry entry = null;
+        try {
+            entry = ks.getEntry(prefixedKey, null);
+            return entry != null;
+        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableEntryException e) {
+            e.printStackTrace();
+            throw new SecureSigningException(SecureSigningException.ErrorKind.keystoreError, e);
+        }
+    }
+
+    public KeyPair createKeyPairIfDoesNotExist(String prefixedKey) throws SecureSigningException {
+        KeyStore ks = this.getKeyStore();
+        KeyStore.Entry entry = null;
+        try {
+            entry = ks.getEntry(prefixedKey, null);
+            if (entry == null) {
+                return this.generateKeyPair(prefixedKey);
+            }
+            if (!(entry instanceof KeyStore.PrivateKeyEntry)) {
+                throw new SecureSigningException(SecureSigningException.ErrorKind.missingKey);
+            }
+            PrivateKey privateKey = ((KeyStore.PrivateKeyEntry) entry).getPrivateKey();
+            Certificate cert = ((KeyStore.PrivateKeyEntry) entry).getCertificate();
+            PublicKey publicKey = cert.getPublicKey();
+            return new KeyPair(publicKey, privateKey);
+        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableEntryException e) {
+            e.printStackTrace();
+            throw new SecureSigningException(SecureSigningException.ErrorKind.keystoreError, e);
+        }
+    }
+
+    public byte[] ecFromPubKey(PublicKey pubKey) {
+        // Extract the EC public key (65 bytes) from the DER encoded public key (91
+        // bytes)
+        // @see
+        // https://stackoverflow.com/questions/57209127/what-should-the-length-of-public-key-on-ecdh-be
+        byte[] derEncodedPublicKey = pubKey.getEncoded();
+        ASN1Sequence sequence = DERSequence.getInstance(derEncodedPublicKey);
+        DERBitString ecPublicKey = (DERBitString) sequence.getObjectAt(1);
+        byte[] ecPublicKeyBytes = ecPublicKey.getBytes();
+        return ecPublicKeyBytes;
     }
 }
