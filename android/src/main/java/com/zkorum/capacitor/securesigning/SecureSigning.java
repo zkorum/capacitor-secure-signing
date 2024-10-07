@@ -44,13 +44,11 @@ public class SecureSigning {
         try {
             kpg = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC, ANDROID_KEY_STORE);
             kpg.initialize(
-                new KeyGenParameterSpec.Builder(prefixedKey, KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY)
-                    .setAlgorithmParameterSpec(new ECGenParameterSpec("secp256r1"))
-                    .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
-                    .setUserAuthenticationRequired(true)
-                    .setUserAuthenticationParameters(15 * 60, KeyProperties.AUTH_BIOMETRIC_STRONG | KeyProperties.AUTH_DEVICE_CREDENTIAL)
-                    .build()
-            );
+                    new KeyGenParameterSpec.Builder(prefixedKey,
+                            KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY)
+                            .setAlgorithmParameterSpec(new ECGenParameterSpec("secp256r1"))
+                            .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
+                            .build());
 
             return kpg.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
