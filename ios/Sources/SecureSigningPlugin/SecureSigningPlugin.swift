@@ -1,59 +1,55 @@
-import Foundation
 import Capacitor
 
-/**
- * Please read the Capacitor iOS Plugin Development Guide
- * here: https://capacitorjs.com/docs/plugins/ios
- */
 @objc(SecureSigningPlugin)
-public class SecureSigningPlugin: CAPPlugin, CAPBridgedPlugin {
-    public let identifier = "SecureSigningPlugin"
-    public let jsName = "SecureSigning"
-    public let pluginMethods: [CAPPluginMethod] = [
-        CAPPluginMethod(name: "generateKeyPair", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "sign", returnType: CAPPluginReturnPromise)
-    ]
-    private let implementation = SecureSigning()
+public class SecureSigningPlugin: CAPPlugin {
+
+    private let secureSigning = SecureSigning()
 
     @objc func generateKeyPair(_ call: CAPPluginCall) {
-        let prefixedKey = call.getString("prefixedKey") ?? ""
-        call.resolve([
-            "publicKey": implementation.generateKeyPair(prefixedKey)
-        ])
+        guard let prefixedKey = call.getString("prefixedKey") else {
+            call.reject("Missing 'prefixedKey'")
+            return
+        }
+        do {
+            let privateKey = try secureSigning.generateKeyPair(prefixedKey: prefixedKey)
+            let publicKey = SecKeyCopyPublicKey(privateKey)!
+            let publicKeyData = try secureSigning.encodePublicKey(publicKey)
+            call.resolve(["publicKey": publicKeyData.base64EncodedString()])
+        } catch {
+            call.reject("Error generating key pair: \(error.localizedDescription)")
+        }
+    }
+
+    @objc func doesKeyPairExist(_ call: CAPPluginCall) {
+        guard let prefixedKey = call.getString("prefixedKey") else {
+            call.reject("Missing 'prefixedKey'")
+            return
+        }
+        let exists = secureSigning.doesKeyPairExist(prefixedKey: prefixedKey)
+        call.resolve(["isExisting": exists])
     }
 
     @objc func sign(_ call: CAPPluginCall) {
-        let prefixedKey = call.getString("prefixedKey") ?? ""
-        let data = call.getString("data") ?? ""
-        let decodedData = Data(data.utf8).base64EncodedString()
-        call.resolve([
-            "signature": implementation.sign(prefixedKey, decodedData)
-        ])
-
-    @objc func doesKeyPairExist(_ call: CAPPluginCall) {
-        let prefixedKey = call.getString("prefixedKey") ?? ""
-        call.resolve([
-            "isExisting": implementation.doesKeyPairExist(prefixedKey)
-        ])
-
-    @objc func createKeyPairIfDoesNotExist(_ call: CAPPluginCall) {
-        let prefixedKey = call.getString("prefixedKey") ?? ""
-        call.resolve([
-            "publicKey": implementation.createKeyPairIfDoesNotExist(prefixedKey)
-        ])
+        guard let prefixedKey = call.getString("prefixedKey"),
+              let dataBase64 = call.getString("data"),
+              let data = Data(base64Encoded: dataBase64) else {
+            call.reject("Missing or invalid 'prefixedKey' or 'data'")
+            return
+        }
+        do {
+            let signature = try secureSigning.sign(prefixedKey: prefixedKey, data: data)
+            call.resolve(["signature": signature])
+        } catch {
+            call.reject("Error signing data: \(error.localizedDescription)")
+        }
     }
 
     @objc func deleteKeyPair(_ call: CAPPluginCall) {
-        let prefixedKey = call.getString("prefixedKey") ?? ""
-        call.resolve([
-            "deleteStatus": implementation.deleteKeyPair(prefixedKey)
-        ])
-    }
-
-    @objc func getKeyPair(_ call: CAPPluginCall) {
-        let prefixedKey = call.getString("prefixedKey") ?? ""
-        call.resolve([
-            "publicKey": implementation.getKeyPair(prefixedKey)
-        ])
+        guard let prefixedKey = call.getString("prefixedKey") else {
+            call.reject("Missing 'prefixedKey'")
+            return
+        }
+        let status = secureSigning.deleteKeyPair(prefixedKey: prefixedKey)
+        call.resolve(["deleteStatus": status == .deleted ? "DELETED" : "NOT_FOUND"])
     }
 }

@@ -120,9 +120,16 @@ getKeyPair(options: { prefixedKey: string; }) => Promise<{ publicKey: string; }>
 
 ## TODO
 
-- iOS support
-- more options for keys / security
+[x] iOS support
+[ ] more options for keys / security
 
+## Acknowledgements
+
+<img src="https://ngi.eu/wp-content/uploads/2019/06/Logo-NGI_Explicit-with-baseline-rgb.png" width="200" alt="NGI">
+
+This project has received funding from the European Union's Horizon Europe 2020 research and innovation program through the [NGI TRUSTCHAIN](https://trustchain.ngi.eu/) program under cascade funding agreement No. 101093274.
+
+The NGI TRUSTCHAIN grant mainly funded the `deleteKeyPair`, `getKeyPair` functions as well as the iOS support, as well as its general usage within Agora Citizen Network.
 
 ## License
 
