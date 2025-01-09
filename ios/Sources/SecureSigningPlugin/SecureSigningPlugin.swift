@@ -42,4 +42,18 @@ public class SecureSigningPlugin: CAPPlugin, CAPBridgedPlugin {
             "publicKey": implementation.createKeyPairIfDoesNotExist(prefixedKey)
         ])
     }
+
+    @objc func deleteKeyPair(_ call: CAPPluginCall) {
+        let prefixedKey = call.getString("prefixedKey") ?? ""
+        call.resolve([
+            "deleteStatus": implementation.deleteKeyPair(prefixedKey)
+        ])
+    }
+
+    @objc func getKeyPair(_ call: CAPPluginCall) {
+        let prefixedKey = call.getString("prefixedKey") ?? ""
+        call.resolve([
+            "publicKey": implementation.getKeyPair(prefixedKey)
+        ])
+    }
 }

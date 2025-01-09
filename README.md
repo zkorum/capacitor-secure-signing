@@ -19,6 +19,8 @@ npx cap sync
 * [`generateKeyPair(...)`](#generatekeypair)
 * [`sign(...)`](#sign)
 * [`createKeyPairIfDoesNotExist(...)`](#createkeypairifdoesnotexist)
+* [`deleteKeyPair(...)`](#deletekeypair)
+* [`getKeyPair(...)`](#getkeypair)
 
 </docgen-index>
 
@@ -74,6 +76,36 @@ sign(options: { prefixedKey: string; data: string; }) => Promise<{ signature: st
 
 ```typescript
 createKeyPairIfDoesNotExist(options: { prefixedKey: string; }) => Promise<{ publicKey: string; }>
+```
+
+| Param         | Type                                  |
+| ------------- | ------------------------------------- |
+| **`options`** | <code>{ prefixedKey: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ publicKey: string; }&gt;</code>
+
+--------------------
+
+
+### deleteKeyPair(...)
+
+```typescript
+deleteKeyPair(options: { prefixedKey: string; }) => Promise<{ deleteStatus: string; }>
+```
+
+| Param         | Type                                  |
+| ------------- | ------------------------------------- |
+| **`options`** | <code>{ prefixedKey: string; }</code> |
+
+**Returns:** <code>Promise&lt;{ deleteStatus: string; }&gt;</code>
+
+--------------------
+
+
+### getKeyPair(...)
+
+```typescript
+getKeyPair(options: { prefixedKey: string; }) => Promise<{ publicKey: string; }>
 ```
 
 | Param         | Type                                  |

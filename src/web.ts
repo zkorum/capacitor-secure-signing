@@ -29,4 +29,19 @@ export class SecureSigningWeb extends WebPlugin implements SecureSigningPlugin {
     // TODO:
     return Promise.resolve({ publicKey: options.prefixedKey });
   }
+
+  async deleteKeyPair(_options: {
+    prefixedKey: string;
+  }): Promise<{ deleteStatus: string }> {
+    // TODO:
+    // Return an enum?
+    return Promise.resolve({ deleteStatus: 'DELETED' });
+  }
+
+  async getKeyPair(options: {
+    prefixedKey: string;
+  }): Promise<{ publicKey: string }> {
+    // TODO:
+    return Promise.resolve({ publicKey: options.prefixedKey });
+  }
 }

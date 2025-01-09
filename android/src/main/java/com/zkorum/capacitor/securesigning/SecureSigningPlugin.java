@@ -144,4 +144,44 @@ public class SecureSigningPlugin extends Plugin {
             }
         );
     }
+
+    @PluginMethod
+    public void deleteKeyPair(PluginCall call) {
+        String prefixedKey = this.getKeyParam(call, "prefixedKey");
+        if (prefixedKey == null || prefixedKey.isEmpty()) {
+            call.reject("prefixedKey is null or empty");
+            return;
+        }
+        tryStorageOp(
+            call,
+            () -> {
+                DeleteStatus deleteStatus = implementation.deleteKeyPair(prefixedKey);
+                JSObject ret = new JSObject();
+                ret.put("deleteStatus", deleteStatus.toString());
+                call.resolve(ret);
+            }
+        );
+    }
+
+    @PluginMethod
+    public void getKeyPair(PluginCall call) {
+        String prefixedKey = this.getKeyParam(call, "prefixedKey");
+        if (prefixedKey == null || prefixedKey.isEmpty()) {
+            call.reject("prefixedKey is null or empty");
+            return;
+        }
+        tryStorageOp(
+            call,
+            () -> {
+                KeyPair kp = implementation.getKeyPair(prefixedKey);
+                byte[] ecPublicKeyBytes = implementation.ecFromPubKey(kp.getPublic());
+
+                // Encode to Base64 and send
+                String encodedPublicKey = new String(Base64.getEncoder().encode(ecPublicKeyBytes), StandardCharsets.UTF_8);
+                JSObject ret = new JSObject();
+                ret.put("publicKey", encodedPublicKey);
+                call.resolve(ret);
+            }
+        );
+    }
 }

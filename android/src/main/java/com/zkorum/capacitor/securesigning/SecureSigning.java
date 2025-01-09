@@ -44,11 +44,11 @@ public class SecureSigning {
         try {
             kpg = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC, ANDROID_KEY_STORE);
             kpg.initialize(
-                    new KeyGenParameterSpec.Builder(prefixedKey,
-                            KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY)
-                            .setAlgorithmParameterSpec(new ECGenParameterSpec("secp256r1"))
-                            .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
-                            .build());
+                new KeyGenParameterSpec.Builder(prefixedKey, KeyProperties.PURPOSE_SIGN | KeyProperties.PURPOSE_VERIFY)
+                    .setAlgorithmParameterSpec(new ECGenParameterSpec("secp256r1"))
+                    .setDigests(KeyProperties.DIGEST_SHA256, KeyProperties.DIGEST_SHA512)
+                    .build()
+            );
 
             return kpg.generateKeyPair();
         } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
@@ -160,5 +160,41 @@ public class SecureSigning {
         DERBitString ecPublicKey = (DERBitString) sequence.getObjectAt(1);
         byte[] ecPublicKeyBytes = ecPublicKey.getBytes();
         return ecPublicKeyBytes;
+    }
+
+    public DeleteStatus deleteKeyPair(String prefixedKey) throws SecureSigningException {
+        KeyStore ks = this.getKeyStore();
+        try {
+            if (ks.containsAlias(prefixedKey)) {
+                ks.deleteEntry(prefixedKey);
+                return DeleteStatus.DELETED;
+            } else {
+                return DeleteStatus.NOT_FOUND;
+            }
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+            throw new SecureSigningException(SecureSigningException.ErrorKind.keystoreError, e);
+        }
+    }
+
+    public KeyPair getKeyPair(String prefixedKey) throws SecureSigningException {
+        KeyStore ks = this.getKeyStore();
+        KeyStore.Entry entry = null;
+        try {
+            entry = ks.getEntry(prefixedKey, null);
+            if (entry == null) {
+                throw new SecureSigningException(SecureSigningException.ErrorKind.missingKey);
+            }
+            if (!(entry instanceof KeyStore.PrivateKeyEntry)) {
+                throw new SecureSigningException(SecureSigningException.ErrorKind.missingKey);
+            }
+            PrivateKey privateKey = ((KeyStore.PrivateKeyEntry) entry).getPrivateKey();
+            Certificate cert = ((KeyStore.PrivateKeyEntry) entry).getCertificate();
+            PublicKey publicKey = cert.getPublicKey();
+            return new KeyPair(publicKey, privateKey);
+        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableEntryException e) {
+            e.printStackTrace();
+            throw new SecureSigningException(SecureSigningException.ErrorKind.keystoreError, e);
+        }
     }
 }

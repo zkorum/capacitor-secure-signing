@@ -24,4 +24,16 @@ import Foundation
         print(prefixedKey)
         return prefixedKey
     }
+
+    //TODO:
+    @objc public func deleteKeyPair(_ prefixedKey: String) -> String {
+        print(prefixedKey)
+        return prefixedKey
+    }
+
+    //TODO:
+    @objc public func getKeyPair(_ prefixedKey: String) -> String {
+        print(prefixedKey)
+        return prefixedKey
+    }
 }

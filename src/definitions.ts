@@ -76,4 +76,8 @@ export interface SecureSigningPlugin {
   createKeyPairIfDoesNotExist(options: {
     prefixedKey: string;
   }): Promise<{ publicKey: string }>;
+  deleteKeyPair(options: {
+    prefixedKey: string;
+  }): Promise<{ deleteStatus: string }>;
+  getKeyPair(options: { prefixedKey: string }): Promise<{ publicKey: string }>;
 }
